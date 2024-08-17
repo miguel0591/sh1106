@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "hal_i2c.h": "c",
+        "sh1106.h": "c",
+        "stdint.h": "c",
+        "stddef.h": "c"
+    }
+}

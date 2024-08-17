@@ -1,4 +1,4 @@
-# Trabajo Práctico Número 3 - Testing de Sofware en Sistemas Embebidos
+# DRIVER OLED SH1106 + PRUEBAS FORMALES
 
 ## Uso del repositorio
 

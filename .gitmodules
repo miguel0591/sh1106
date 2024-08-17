@@ -1,0 +1,3 @@
+[submodule "test/support/fff"]
+	path = test/support/fff
+	url = https://github.com/meekrosoft/fff.git

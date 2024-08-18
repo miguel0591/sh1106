@@ -8,6 +8,18 @@
  * haciendo crecer la libreria para funcionar usando otros protocolos de comunicacion, otras
  * plataformas como ESP. Se incorpora el uso de DMA (Acceso Directo a Memoria) en futuras
  * versiones.
+ *
+ * <b>FUNCIONES PENDIENTES DE DESARROLLO</b>
+ * <ul>
+ *   <li>Funcion que dibuje una linea.</li>
+ *   <li>Funcion que dibuje un rectangulo.</li>
+ *   <li>Funcion que dibuje un circulo.</li>
+ *   <li>Funcion que dibuje un circulo relleno.</li>
+ *   <li>Funcion que dibuje un arco de circunferencia.</li>
+ *   <li>Funcion que dibuje un caracter.</li>
+ *   <li>Funcion que dibuje un string.</li>
+ *   <li>Funcion que dibuje mapa de bits monocromaticos.</li>
+ * </ul>
  */
 
 #ifndef INC_SH1106_H_

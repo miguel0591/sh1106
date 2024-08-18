@@ -104,4 +104,15 @@ sh1106_status_t sh1106_Init(void) {
 }
 
 sh1106_status_t sh1106_DrawPixel(uint8_t x, uint8_t y, sh1106_color_t color) {
+    if (x >= SH1106_WHIDTH || y >= SH1106_HEIGHT) {
+        return SH1106_ERROR;
+    }
+
+    if (color == WHITE) {
+        SH1106_Buffer[x + (y / 8) * SH1106_WHIDTH] |= 1 << (y % 8);
+    } else {
+        SH1106_Buffer[x + (y / 8) * SH1106_WHIDTH] &= ~(1 << (y % 8));
+    }
+
+    return SH1106_OK;
 }

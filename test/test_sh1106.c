@@ -23,13 +23,13 @@
  * inicializacion correcta (status devuelve OK).</li>
  *   <li>Test 9: Probar la funcion de inicializacion de la pantalla, simulando una inicializacion
  * incorrecta (status devuelve ERROR).</li>
- *
- *
+ *   <li>Test 10: Probar la funcion para modificar 1 pixel "valido" en el buffer.</li>
+ *   <li>Test 11: Probar la funcion para modificar 1 pixel "NO valido" en el buffer.</li>
  * </ul>
  *
  * <b>PRUEBAS PENDIENTES</b>
  * <ul>
- *   <li>Pendientes</li>
+ *   <li>Probar funciones pendientes de desarrollo. (ver sh1106.h)</li>
  * </ul>
  * @version 0.1
  * @date 2024-08-15
@@ -40,13 +40,34 @@
 #include "mock_hal_i2c.h"
 #include "sh1106.h"
 
+/**
+ * @brief Buffer de la librea a probar (variable extern).
+ *
+ */
 extern uint8_t SH1106_Buffer[];
 
+/**
+ * @brief Variable para almacenar el estatus de las pruebas.
+ *
+ */
 sh1106_status_t status;
 
+/**
+ * @brief Buffer de comparacion para el test 10.
+ *
+ */
+uint8_t buffer_test10[BUFFER_SIZE];
+
+/**
+ * @brief Funcion que se ejecuta antes de cada prueba.
+ *
+ */
 void setUp(void) {
     status = 0x03;                         // ponemos el estatus en un valor fuera de lo definido
     memset(SH1106_Buffer, 0, BUFFER_SIZE); // Inicializa el buffer a ceros antes de cada prueba
+
+    memset(buffer_test10, 0, BUFFER_SIZE);
+    buffer_test10[4] = 0x10;
 }
 
 /**
@@ -173,5 +194,22 @@ void test_probar_la_funcion_init_simulando_una_error(void) {
     memset(buffer_esperado, 0x00, BUFFER_SIZE);
     status = sh1106_Init();
     TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer_esperado, SH1106_Buffer, BUFFER_SIZE);
+    TEST_ASSERT_EQUAL(SH1106_ERROR, status);
+}
+
+/**
+ * @brief Test 10: Probar la funcion para modificar 1 pixel "valido" en el buffer.
+ */
+void test_probar_la_funcion_para_modificar_un_pixel_valido_del_buffer(void) {
+    status = sh1106_DrawPixel(4, 4, WHITE);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer_test10, SH1106_Buffer, BUFFER_SIZE);
+    TEST_ASSERT_EQUAL(SH1106_OK, status);
+}
+
+/**
+ * @brief Test 11: Probar la funcion para modificar 1 pixel "NO valido" en el buffer.
+ */
+void test_probar_la_funcion_para_modificar_un_pixel_NO_valido_del_buffer(void) {
+    status = sh1106_DrawPixel(129, 4, WHITE);
     TEST_ASSERT_EQUAL(SH1106_ERROR, status);
 }

@@ -12,8 +12,8 @@
 
 #include "stdint.h"
 
-typedef enum { HAL_OK, HAL_ERROR, HAL_BUSY } status;
+typedef enum { HAL_OK, HAL_ERROR, HAL_BUSY } status_t;
 
-status HAL_I2C_send(uint8_t * data, uint8_t size);
+status_t HAL_I2C_send(uint8_t * data, uint8_t size);
 
 #endif

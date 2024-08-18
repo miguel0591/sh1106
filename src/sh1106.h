@@ -179,6 +179,15 @@ sh1106_status_t sh1106_SendData(uint8_t * data, size_t size);
 sh1106_status_t sh1106_ContrasSet(uint8_t contrast);
 
 /**
+ * @brief LLena la variable buffer con los bits del color correspondiente.
+ *
+ * @param color: Es el color que se desea usar para rellenar la pantalla, pudiendo ser blanco o
+ * negro.
+ * @return sh1106_status_t: Estado de la operacion.
+ */
+sh1106_status_t sh1106_Fill(sh1106_color_t color);
+
+/**
  * @brief Actualizacion de pantalla.
  *
  * Envia de el contenido del buffer (por I2C) a la DDRAM del display. El controlador divide el
@@ -226,14 +235,15 @@ sh1106_status_t sh1106_UpdateScreen(void);
  *
  * @return sh1106_status_t: Estado de la operacion.
  */
-sh1106_status_t sh1106_init(void);
+sh1106_status_t sh1106_Init(void);
 
 /**
- * @brief LLena la variable buffer con los bits del color correspondiente.
+ * @brief Dibuja un pixel en un punto determinado de la pantalla del color deseado.
  *
- * @param color: Es el color que se desea usar para rellenar la pantalla, pudiendo ser blanco o
- * negro.
+ * @param x: Coordenada en "x" del pixel
+ * @param y: Coordenada en "y" del pixel
+ * @param color: Color del que quiere pintarse el pixel.
  * @return sh1106_status_t: Estado de la operacion.
  */
-sh1106_status_t sh1106_Fill(sh1106_color_t color);
+sh1106_status_t sh1106_DrawPixel(uint8_t x, uint8_t y, sh1106_color_t color);
 #endif /* INC_SH1106_H_ */

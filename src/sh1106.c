@@ -53,42 +53,55 @@ sh1106_status_t sh1106_Fill(sh1106_color_t color) {
     return SH1106_OK;
 };
 
-sh1106_status_t sh1106_init(void) {
-    sh1106_SendCmd(FIRT_PAGE_ADD);      // Nos posicionamos sobre la primera pagina
-    sh1106_SendCmd(COM_OUT_SCAN_INVER); // setemos el sentido de los comunes
-    // seteamos la primera direccion de las columnas.
-    sh1106_SendCmd(FIRT_COLUM_ADD_L);
-    sh1106_SendCmd(FIRT_COLUM_ADD_H);
-    sh1106_ContrasSet(0x80);
-    sh1106_SendCmd(RE_MAP_SEG_NORMAL); // Set segment re-map 0 to 127 - CHECK
-    sh1106_SendCmd(DISPLAY_NORMAL);    // los bit 1 encendido bit 0 apagado.
-    // Set multiplex ratio.
-    sh1106_SendCmd(MUX_RATIO_CONFIG);
-    if (32 == SH1106_HEIGHT) {
-        sh1106_SendCmd(MUX_RATIO_32HEIGHT);
-    } else if (64 == SH1106_HEIGHT) {
-        sh1106_SendCmd(MUX_RATIO_64HEIGHT);
+sh1106_status_t sh1106_Init(void) {
+    uint8_t cmd1[] = {FIRT_PAGE_ADD,      COM_OUT_SCAN_INVER,
+                      FIRT_COLUM_ADD_L,   FIRT_COLUM_ADD_H,
+                      RE_MAP_SEG_NORMAL,  DISPLAY_NORMAL,
+                      RAT_OSC_FREQ_CONF,  0xF0,
+                      CHARG_DISCHAR_PERI, 0x22,
+                      SET_VCOM_DESEL_LEV, 0x20,
+                      SET_DC_DC_CONTROL,  DC_DC_ENABLE,
+                      DISPLAY_ON};
+
+    for (uint8_t i = 0; i < sizeof(cmd1); i++) {
+        if (sh1106_SendCmd(cmd1[i]) == SH1106_ERROR) {
+            return SH1106_ERROR;
+        }
+    }
+
+    if (SH1106_HEIGHT == 32) {
+        uint8_t cmd2[] = {MUX_RATIO_CONFIG, MUX_RATIO_32HEIGHT, PADS_HARD_CONFIG, PADS_HARD_SEQUEN};
+        for (uint8_t i = 0; i < sizeof(cmd2); i++) {
+            if (sh1106_SendCmd(cmd2[i]) == SH1106_ERROR) {
+                return SH1106_ERROR;
+            }
+        }
+    } else if (SH1106_HEIGHT == 64) {
+        uint8_t cmd3[] = {MUX_RATIO_CONFIG, MUX_RATIO_64HEIGHT, PADS_HARD_CONFIG,
+                          PADS_HARD_ALTERNA};
+        for (uint8_t i = 0; i < sizeof(cmd3); i++) {
+            if (sh1106_SendCmd(cmd3[i]) == SH1106_ERROR) {
+                return SH1106_ERROR;
+            }
+        }
     } else {
         return SH1106_ERROR;
     }
-    sh1106_SendCmd(RAT_OSC_FREQ_CONF);  // Set display clock divide ratio/oscillator frequency
-    sh1106_SendCmd(0xF0);               // f = 150%*fo, ratio = 1
-    sh1106_SendCmd(CHARG_DISCHAR_PERI); // Ser pre-charge period
-    sh1106_SendCmd(0x22);               // 2 DCLKs precharge, 2 DCLKs discharger
-    sh1106_SendCmd(PADS_HARD_CONFIG);   // PADs Configuration
-    if (32 == SH1106_HEIGHT) {
-        sh1106_SendCmd(PADS_HARD_SEQUEN);
-    } else if (64 == SH1106_HEIGHT) {
-        sh1106_SendCmd(PADS_HARD_ALTERNA);
-    } else {
+
+    if (sh1106_ContrasSet(0x80) == SH1106_ERROR) {
         return SH1106_ERROR;
     }
-    sh1106_SendCmd(SET_VCOM_DESEL_LEV);
-    sh1106_SendCmd(0x20);              // 0x20,0.77xVcc
-    sh1106_SendCmd(SET_DC_DC_CONTROL); // Configurar DC/DC
-    sh1106_SendCmd(DC_DC_ENABLE);      // Activar DC/DC
-    sh1106_SendCmd(DISPLAY_ON);        // Encender Display
-    sh1106_Fill(BLACK);                // Limpiar Pantalla (buffer)
-    sh1106_UpdateScreen();
+
+    if (sh1106_Fill(BLACK) == SH1106_ERROR) {
+        return SH1106_ERROR;
+    }
+
+    if (sh1106_UpdateScreen() == SH1106_ERROR) {
+        return SH1106_ERROR;
+    }
+
     return SH1106_OK;
+}
+
+sh1106_status_t sh1106_DrawPixel(uint8_t x, uint8_t y, sh1106_color_t color) {
 }

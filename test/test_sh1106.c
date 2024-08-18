@@ -19,6 +19,12 @@
  *   <li>Test 6: Probar la funcion de de actualizacion de pantalla y retorne error.</li>
  *   <li>Test 7: Probar la funcion para llenar el buffer (que se carga en la DDRAM) de valores en
  * 0xFF (WHITE) funciona correctamente.</li>
+ *   <li>Test 8: Probar la funcion de inicializacion de la pantalla, simulando una
+ * inicializacion correcta (status devuelve OK).</li>
+ *   <li>Test 9: Probar la funcion de inicializacion de la pantalla, simulando una inicializacion
+ * incorrecta (status devuelve ERROR).</li>
+ *
+ *
  * </ul>
  *
  * <b>PRUEBAS PENDIENTES</b>
@@ -36,8 +42,10 @@
 
 extern uint8_t SH1106_Buffer[];
 
+sh1106_status_t status;
+
 void setUp(void) {
-    sh1106_status_t status = 0x03;         // ponemos el estatus en un valor fuera de lo definido
+    status = 0x03;                         // ponemos el estatus en un valor fuera de lo definido
     memset(SH1106_Buffer, 0, BUFFER_SIZE); // Inicializa el buffer a ceros antes de cada prueba
 }
 
@@ -137,4 +145,33 @@ void test_llenar_el_buffer_de_valores_correspondientes_a_todos_los_bit_encendido
     status = sh1106_Fill(WHITE);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer_esperado, SH1106_Buffer, BUFFER_SIZE);
     TEST_ASSERT_EQUAL(SH1106_OK, status);
+}
+
+/**
+ * @brief Test 8: Probar la funcion de inicializacion de la pantalla, simulando una inicializacion
+ * correcta (status devuelve OK).
+ *
+ */
+
+void test_probar_la_funcion_init_simulando_una_exito(void) {
+    HAL_I2C_send_fake.return_val = 0;
+    uint8_t buffer_esperado[BUFFER_SIZE];
+    memset(buffer_esperado, 0x00, BUFFER_SIZE);
+    status = sh1106_Init();
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer_esperado, SH1106_Buffer, BUFFER_SIZE);
+    TEST_ASSERT_EQUAL(SH1106_OK, status);
+}
+
+/**
+ * @brief Test 9: Probar la funcion de inicializacion de la pantalla, simulando una inicializacion
+ * incorrecta (status devuelve OERROR).
+ */
+
+void test_probar_la_funcion_init_simulando_una_error(void) {
+    HAL_I2C_send_fake.return_val = 1;
+    uint8_t buffer_esperado[BUFFER_SIZE];
+    memset(buffer_esperado, 0x00, BUFFER_SIZE);
+    status = sh1106_Init();
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer_esperado, SH1106_Buffer, BUFFER_SIZE);
+    TEST_ASSERT_EQUAL(SH1106_ERROR, status);
 }

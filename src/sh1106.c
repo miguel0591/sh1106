@@ -13,7 +13,6 @@
 
 /* === Public variable declarations ============================================================ */
 uint8_t SH1106_Buffer[BUFFER_SIZE] = {0};
-uint8_t SH1106_Buffer1[] = {2, 4, 5, 6};
 
 /* === Public function declarations ============================================================ */
 sh1106_status_t sh1106_SendCmd(uint8_t cmd) {

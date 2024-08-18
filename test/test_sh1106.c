@@ -17,6 +17,8 @@
  *   <li>Test 4: Probar funcion de contraste y que retorno ERROR.</li>
  *   <li>Test 5: Probar la funcion de de actualizacion de pantalla y retorne OK.</li>
  *   <li>Test 6: Probar la funcion de de actualizacion de pantalla y retorne error.</li>
+ *   <li>Test 7: Probar la funcion para llenar el buffer (que se carga en la DDRAM) de valores en
+ * 0xFF (WHITE) funciona correctamente.</li>
  * </ul>
  *
  * <b>PRUEBAS PENDIENTES</b>
@@ -33,6 +35,12 @@
 #include "sh1106.h"
 
 extern uint8_t SH1106_Buffer[];
+
+void setUp(void) {
+    sh1106_status_t status = 0x03;         // ponemos el estatus en un valor fuera de lo definido
+    memset(SH1106_Buffer, 0, BUFFER_SIZE); // Inicializa el buffer a ceros antes de cada prueba
+}
+
 /**
  * @brief Test 1: Enviar un comando cualquiera y que retorne status OK
  *
@@ -44,7 +52,6 @@ extern uint8_t SH1106_Buffer[];
  */
 void test_enviar_un_comando_a_el_driver_por_I2C_y_que_retorne_status_ok(void) {
     HAL_I2C_send_fake.return_val = 0;    // valor de retorno status HAL
-    sh1106_status_t status = 0x02;       // ponemos el registro en un valor /= de 0.
     status = sh1106_SendCmd(DISPLAY_ON); // almacemos el status para evaluarlo
     TEST_ASSERT_EQUAL(SH1106_OK, status);
 }
@@ -59,7 +66,6 @@ void test_enviar_un_comando_a_el_driver_por_I2C_y_que_retorne_status_ok(void) {
  */
 void test_enviar_un_comando_a_el_driver_por_I2C_y_que_retorne_status_error(void) {
     HAL_I2C_send_fake.return_val = 1;
-    sh1106_status_t status = 0x02;
     status = sh1106_SendCmd(0x01);
     TEST_ASSERT_EQUAL(SH1106_ERROR, status);
 }
@@ -76,7 +82,6 @@ void test_enviar_un_comando_a_el_driver_por_I2C_y_que_retorne_status_error(void)
  */
 void test_probar_la_funcion_de_seteo_de_contraste_y_que_retorno_ok(void) {
     HAL_I2C_send_fake.return_val = 0;
-    sh1106_status_t status = 0x02;
     status = sh1106_ContrasSet(0x80);
     TEST_ASSERT_EQUAL(SH1106_OK, status);
 }
@@ -93,7 +98,6 @@ void test_probar_la_funcion_de_seteo_de_contraste_y_que_retorno_ok(void) {
  */
 void test_probar_la_funcion_de_seteo_de_contraste_y_que_retorno_error(void) {
     HAL_I2C_send_fake.return_val = 1;
-    sh1106_status_t status = 0x02;
     status = sh1106_ContrasSet(0x80);
     TEST_ASSERT_EQUAL(SH1106_ERROR, status);
 }
@@ -106,7 +110,6 @@ void test_probar_la_funcion_de_seteo_de_contraste_y_que_retorno_error(void) {
  */
 void test_probar_la_funcion_de_actualiacion_de_pantalla_y_que_retorne_ok(void) {
     HAL_I2C_send_fake.return_val = 0;
-    sh1106_status_t status = 0x02;
     status = sh1106_UpdateScreen();
     TEST_ASSERT_EQUAL(SH1106_OK, status);
 }
@@ -119,12 +122,19 @@ void test_probar_la_funcion_de_actualiacion_de_pantalla_y_que_retorne_ok(void) {
  */
 void test_probar_la_funcion_de_actualiacion_de_pantalla_y_que_retorne_error(void) {
     HAL_I2C_send_fake.return_val = 1;
-    sh1106_status_t status = 0x02;
     status = sh1106_UpdateScreen();
     TEST_ASSERT_EQUAL(SH1106_ERROR, status);
 }
 
 /**
- * @brief Test 7: Problar la funicion para llenar el buffer que luego se carga en la DDRAM
+ * @brief Test 7: Probar la funcion para llenar el buffer (que se carga en la DDRAM) de valores en
+ * 0xFF (WHITE) funciona correctamente.
  *
  */
+void test_llenar_el_buffer_de_valores_correspondientes_a_todos_los_bit_encendidos(void) {
+    uint8_t buffer_esperado[BUFFER_SIZE];
+    memset(buffer_esperado, 0xFF, BUFFER_SIZE);
+    status = sh1106_Fill(WHITE);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer_esperado, SH1106_Buffer, BUFFER_SIZE);
+    TEST_ASSERT_EQUAL(SH1106_OK, status);
+}

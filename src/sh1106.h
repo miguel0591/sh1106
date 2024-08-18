@@ -16,6 +16,7 @@
 /* === Inclusion de archivos de cabecera  ====================================================== */
 #include "stdint.h"
 #include "stddef.h"
+#include <string.h>
 #include "hal_i2c.h"
 
 /* === Definicion de los macros publicos ======================================================= */
